@@ -10,7 +10,7 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, periods, n2, n1, treatment_n,
     # Libraries
     library(lme4)
     library(bain)
-    library(BFpack)
+    # library(BFpack)
     
     # Warnings
     if (is.numeric(c(eff_size, n1, n2, ndatasets, BF_thresh, max_sample, batch_size)) == FALSE) 
@@ -19,7 +19,7 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, periods, n2, n1, treatment_n,
     if (eta > 1) stop("The probability of exceeding Bayes Factor threshold cannot be larger than 1")
     if (is.character(fixed) == FALSE) stop("Fixed can only be a character indicating n1 or n2.")
     if (fixed %in% c("n1", "n2") == FALSE) stop("Fixed can only be a character indicating n1 or n2.")
-
+    
     # Functions
     source("data_generation_xo.R")
     source("helper_functions.R")
@@ -49,9 +49,9 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, periods, n2, n1, treatment_n,
     while (ultimate_sample_size == FALSE) {
         # Generate data ------------------------------------------------------------
         data_H1 <- do.call(data_generation, list(eff_size, cac,wp_icc, periods, n2, 
-                                              n1, treatment_n, 
-                                              seed, ndatasets, 
-                                              batch_size = batch_size))
+                                                 n1, treatment_n, 
+                                                 seed, ndatasets, 
+                                                 batch_size = batch_size))
         
         # If H0 is true
         # data_H0 <- do.call(data_generation, list(eff_size = 0, cac,wp_icc, periods, n2, 
@@ -81,7 +81,7 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, periods, n2, n1, treatment_n,
         current_eta <- length(which(results_H1[, "BF.1c"] > BF_thresh)) / ndatasets
         
         # Evaluation
-        ifelse(current_eta > eta, condition_met <- TRUE, conditions_met <- FALSE)
+        ifelse(current_eta > eta, condition_met <- TRUE, condition_met <- FALSE)
         
         # Update sample size ---------------------------------------------------
         binary_search <- update_sample(results = results_H1, eta = eta, 
@@ -117,12 +117,12 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, periods, n2, n1, treatment_n,
                   BF_thresh = BF_thresh)
     if (any(singular_warn > 0)) warning("At least one of the fitted models is singular. For more information about singularity see help('isSingular').
                                The number of models that are singular can be found in the output object.")
-    invisible(final_SSD)
+    invisible(binary_search$final_SSD)
 }
 
 # #Test
 # a <- ssd_crt_xo(eff_size = 0.4, cac = 0.8, wp_icc = 0.01, periods = 2, n2 = 60,
-#                 n1 = 10, treatment_n = 2, 
-#                 pattern = "chess", seed = 23, BF_thresh = 2, eta = 0.8, 
-#                 batch_size = 10, max_sample = 80, 
+#                 n1 = 10, treatment_n = 2,
+#                 pattern = "chess", seed = 23, BF_thresh = 2, eta = 0.8,
+#                 batch_size = 10, max_sample = 80,
 #                 ndatasets = 10, fixed = "n1")
