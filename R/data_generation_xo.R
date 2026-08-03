@@ -4,7 +4,7 @@
 # From: https://github.com/KMTanvir/RedundantCrossovers/tree/master
 
 data_generation <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment_n, 
-                            seed, ndatasets, batch_size){
+                            seed, ndatasets, batch_size, gc_every = 10){
     
     treatment_eff <- eff_size
     

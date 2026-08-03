@@ -5,7 +5,7 @@
 
 ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment_n, 
                        pattern, seed, BF_thresh, eta, batch_size, max_sample, 
-                       ndatasets, fixed) {
+                       ndatasets, fixed, gc_every = 10) {
     
     # Libraries
     library(lme4)
@@ -49,15 +49,26 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment
     while (ultimate_sample_size == FALSE) {
         # Generate data ------------------------------------------------------------
         if (missing(bp_icc)) {
-            data_H1 <- do.call(data_generation, list(eff_size, cac, wp_icc, periods, n2, 
-                                                     n1, treatment_n, 
-                                                     seed, ndatasets, 
-                                                     batch_size = batch_size))
+            data_H1 <- do.call(data_generation, list(eff_size = eff_size, 
+                                                     cac = cac, wp_icc = wp_icc,
+                                                     periods = periods, n2 = n2, 
+                                                     n1 = n1,
+                                                     treatment_n = treatment_n, 
+                                                     seed = seed, 
+                                                     ndatasets = ndatasets, 
+                                                     batch_size = batch_size,
+                                                     gc_every = gc_every))
         } else {
-            data_H1 <- do.call(data_generation, list(eff_size, bp_icc, wp_icc, periods, n2, 
-                                                     n1, treatment_n, 
-                                                     seed, ndatasets, 
-                                                     batch_size = batch_size))
+            data_H1 <- do.call(data_generation, list(eff_size = eff_size,
+                                                     bp_icc = bp_icc,
+                                                     wp_icc = wp_icc,
+                                                     periods = periods, n2 = n2, 
+                                                     n1 = n1,
+                                                     treatment_n = treatment_n, 
+                                                     seed = seed,
+                                                     ndatasets = ndatasets, 
+                                                     batch_size = batch_size,
+                                                     gc_every = gc_every))
         }
         
         
