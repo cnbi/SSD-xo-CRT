@@ -3,7 +3,7 @@
 
 
 
-ssd_crt_xo <- function(eff_size, cac, wp_icc, periods, n2, n1, treatment_n, 
+ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment_n, 
                        pattern, seed, BF_thresh, eta, batch_size, max_sample, 
                        ndatasets, fixed) {
     
@@ -48,10 +48,18 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, periods, n2, n1, treatment_n,
     
     while (ultimate_sample_size == FALSE) {
         # Generate data ------------------------------------------------------------
-        data_H1 <- do.call(data_generation, list(eff_size, cac,wp_icc, periods, n2, 
-                                                 n1, treatment_n, 
-                                                 seed, ndatasets, 
-                                                 batch_size = batch_size))
+        if (missing(bp_icc)) {
+            data_H1 <- do.call(data_generation, list(eff_size, cac, wp_icc, periods, n2, 
+                                                     n1, treatment_n, 
+                                                     seed, ndatasets, 
+                                                     batch_size = batch_size))
+        } else {
+            data_H1 <- do.call(data_generation, list(eff_size, bp_icc, wp_icc, periods, n2, 
+                                                     n1, treatment_n, 
+                                                     seed, ndatasets, 
+                                                     batch_size = batch_size))
+        }
+        
         
         # If H0 is true
         # data_H0 <- do.call(data_generation, list(eff_size = 0, cac,wp_icc, periods, n2, 
@@ -106,9 +114,10 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, periods, n2, n1, treatment_n,
         previous_high <- binary_search$previous_high
         
         rm(data_H1)
+        gc(full = TRUE)
     }
     
-    
+    rm(output_bf)
     if (n2 < 30) warning("The number of groups is less than 30.
                                              This may cause problems in convergence and singularity.")
     

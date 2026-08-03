@@ -19,36 +19,36 @@ run_sim <- function(row, design_matrix,
     
     if (fixed == "N1") {
         ssd_results <- ssd_crt_xo(eff_size = design_matrix[row, "eff_size"],
-                   cac = design_matrix[row, "cac"],
-                   wp_icc = design_matrix[row, "wp_icc"],
-                   periods = design_matrix[row, "periods"],
-                   n2 = design_matrix[row, "n2"],
-                   n1 = design_matrix[row, "n1"],
-                   treatment_n = 2, pattern = "chess",
-                   seed = design_matrix[row, "seed"],
-                   BF_thresh = design_matrix[row, "BF_thresh"],
-                   eta = design_matrix[row, "eta"],
-                   batch_size = batch_size, max_sample = Max, ndatasets = ndatasets,
-                   fixed = design_matrix[row, "fixed"])
+                                  cac = design_matrix[row, "cac"],
+                                  wp_icc = design_matrix[row, "wp_icc"],
+                                  periods = design_matrix[row, "periods"],
+                                  n2 = design_matrix[row, "n2"],
+                                  n1 = design_matrix[row, "n1"],
+                                  treatment_n = 2, pattern = "chess",
+                                  seed = design_matrix[row, "seed"],
+                                  BF_thresh = design_matrix[row, "BF_thresh"],
+                                  eta = design_matrix[row, "eta"],
+                                  batch_size = batch_size, max_sample = Max, ndatasets = ndatasets,
+                                  fixed = as.character(design_matrix[row, "fixed"]))
     } else if (fixed == "N2") {
         ssd_results <- ssd_crt_xo(eff_size = design_matrix[row, "eff_size"],
-                   cac = design_matrix[row, "cac"],
-                   wp_icc = design_matrix[row, "wp_icc"],
-                   periods = design_matrix[row, "periods"],
-                   n2 = design_matrix[row, "n2"],
-                   n1 = design_matrix[row, "n1"],
-                   treatment_n = 2, pattern = "chess",
-                   seed = design_matrix[row, "seed"],
-                   BF_thresh = design_matrix[row, "BF_thresh"],
-                   eta = design_matrix[row, "eta"],
-                   batch_size = batch_size, max_sample = Max, ndatasets = ndatasets,
-                   fixed = design_matrix[row, "fixed"])
+                                  cac = design_matrix[row, "cac"],
+                                  wp_icc = design_matrix[row, "wp_icc"],
+                                  periods = design_matrix[row, "periods"],
+                                  n2 = design_matrix[row, "n2"],
+                                  n1 = design_matrix[row, "n1"],
+                                  treatment_n = 2, pattern = "chess",
+                                  seed = design_matrix[row, "seed"],
+                                  BF_thresh = design_matrix[row, "BF_thresh"],
+                                  eta = design_matrix[row, "eta"],
+                                  batch_size = batch_size, max_sample = Max, ndatasets = ndatasets,
+                                  fixed = as.character(design_matrix[row, "fixed"]))
     }
     
     # End time and save results
     end_time <- Sys.time()
     file_name <- file.path(results_folder,
-                           paste0("Results", finding, "Row", Row, ".RDS"))
+                           paste0("Results", finding, "Row", row, ".RDS"))
     saveRDS(ssd_results, file = file_name)
     
     # Save running time
@@ -60,4 +60,43 @@ run_sim <- function(row, design_matrix,
     rm(ssd_results)
     NULL
     gc()
+}
+
+# Check simulation--------------------
+missing_rows <- function(folder_path,
+                         name_pattern = NULL,
+                         check_numbers,
+                         underscore = TRUE) {
+    files_names <- list.files(folder_path)
+    
+    # Filter by name pattern
+    if (!is.null(name_pattern)) {
+        filtered_names <- files_names[grep(name_pattern, files_names)]
+    }
+    
+    # Extract the number of row
+    if (underscore) {
+        row_numbers <- sapply(filtered_names, function(names){
+            parts <- unlist(strsplit(names, "_"))
+            number <- parts[length(parts)]
+            
+            # Remove extension
+            number_only <- sub("\\.[^.]+$", "", number)
+            return(number_only)
+        })   
+    } else if (underscore == FALSE) {
+        
+        row_numbers <- sapply(filtered_names, function(names){
+            # Remove extension
+            name_no_ext <- tools::file_path_sans_ext(names)
+            
+            number <- regmatches(name_no_ext, gregexpr("\\d+$", name_no_ext))[[1]]
+            
+            return(number)
+        })
+    }
+    
+    
+    difference <- setdiff(check_numbers, row_numbers)
+    print(difference)
 }
