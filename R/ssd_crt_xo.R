@@ -10,7 +10,7 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment
     # Libraries
     library(lme4)
     library(bain)
-    # library(BFpack)
+    library(BFpack)
     
     # Warnings
     if (is.numeric(c(eff_size, n1, n2, ndatasets, BF_thresh, max_sample, batch_size)) == FALSE) 
@@ -53,9 +53,9 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment
                                                      cac = cac, wp_icc = wp_icc,
                                                      periods = periods, n2 = n2, 
                                                      n1 = n1,
-                                                     treatment_n = treatment_n, 
-                                                     seed = seed, 
-                                                     ndatasets = ndatasets, 
+                                                     treatment_n = treatment_n,
+                                                     seed = seed,
+                                                     ndatasets = ndatasets,
                                                      batch_size = batch_size,
                                                      gc_every = gc_every))
         } else {
@@ -64,9 +64,9 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment
                                                      wp_icc = wp_icc,
                                                      periods = periods, n2 = n2, 
                                                      n1 = n1,
-                                                     treatment_n = treatment_n, 
+                                                     treatment_n = treatment_n,
                                                      seed = seed,
-                                                     ndatasets = ndatasets, 
+                                                     ndatasets = ndatasets,
                                                      batch_size = batch_size,
                                                      gc_every = gc_every))
         }

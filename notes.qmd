@@ -1,0 +1,222 @@
+---
+title: "notes"
+author: "CNBI"
+format: html
+editor: visual
+---
+
+```{r}
+library(ggplot2)
+```
+
+## Simulation
+
+### Results
+
+#### Power, sample sizes and effect sizes
+
+```{r}
+# Data
+figure1_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure1_data/figure1_data_set2.RDS")
+```
+
+```{r}
+# Number of clusters
+ggplot(figure1_data_set2[figure1_data_set2$fixed == "n2",],
+       aes(
+           y = eta.BF12,
+           x = n2.final,
+           color = as.factor(eff_size),
+           shape = as.factor(eff_size)
+       )) +
+    geom_point() + geom_line() +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "Effect size",
+         shape = "Effect size") +
+    xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept=figure1_data_set2$eta)
+```
+
+Note: Number of clusters instead of cluster size because for these number of clusters 5 participants per cluster was enough.
+
+```{r}
+# Cluster size
+ggplot(figure1_data_set2[figure1_data_set2$fixed == "n1",],
+       aes(
+           y = eta.BF12,
+           x = n1.final,
+           color = as.factor(eff_size),
+           shape = as.factor(eff_size)
+       )) +
+    geom_point() + geom_line() +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "Effect size",
+         shape = "Effect size") +
+    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept=figure1_data_set2$eta)
+
+
+```
+
+In comparison to the increase of number of clusters, in this case there is a small difference of Probabilty across the effect sizes when the cluster size is small. It is possible to see the curve.
+
+#### Power and correlations (ICC_bp and CAC)
+
+```{r}
+figure2_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure2_data/figure2_data_set2.RDS")
+```
+
+```{r}
+ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
+       aes(
+           y = eta.BF12,
+           x = n2.final,
+           color = as.factor(cac),
+           shape = as.factor(cac)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(wp_icc)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "CAC",
+         shape = "CAC") +
+    xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept=figure2_data_set2$eta)
+```
+
+When the within cluster between-period correlation coefficient is small, the difference between the cluster autocorrelation is so small that is not perceived in the Figure. In comparison, when the cluster between-period correlation coefficien, the difference in Bayesian power across the different values of cluster autocorrelation increases, specially for smaller number of clusters such as 10 and 20.
+
+```{r}
+ggplot(figure2_data_set2[figure2_data_set2$fixed == "n1",],
+       aes(
+           y = eta.BF12,
+           x = n1.final,
+           color = as.factor(cac),
+           shape = as.factor(cac)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(wp_icc)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "CAC",
+         shape = "CAC") +
+    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept=figure2_data_set2$eta)
+
+```
+
+In comparison to the previous Figure, in this Figure the differences in empirical $\eta$ across the levels of CAC are smaller. Only when the within-cluster between-period correlation is larger such as 0.1, then there are some differences in the empirical $\eta$ for smaller cluster sizes such as 5 and 10. After 10 the differences are not distinguishable.
+
+#### Power, Bayes factor threshold and eta
+
+```{r}
+figure3_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure3_data/figure3_data_set2.RDS")
+```
+
+```{r}
+# Number of clusters
+ggplot(figure3_data_set2[figure3_data_set2$fixed == "n2",],
+       aes(
+           y = eta.BF12,
+           x = n2.final,
+           color = as.factor(BF_thresh),
+           shape = as.factor(BF_thresh)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(eta)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "BF threshold",
+         shape = "BF threshold") +
+    xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom")
+```
+
+According to the plots there is a clear difference across the Bf thresholds, it is easier to meet the power criterion when the threshold is smaller, for instance 3.
+
+```{r}
+# Cluster size
+ggplot(figure3_data_set2[figure3_data_set2$fixed == "n1",],
+       aes(
+           y = eta.BF12,
+           x = n1.final,
+           color = as.factor(BF_thresh),
+           shape = as.factor(BF_thresh)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(eta)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "BF threshold",
+         shape = "BF threshold") +
+    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom")
+
+
+```
+
+In comparison to the other Figure, the empirical $\eta$ tends to be lower for all combinations. Moreover, there is a clearer distinction in the empirical $\eta$ across the different values of thresholds. As expected, with larger thresholds the empirical $\eta$ is lower.
+
+#### Full factorial simulation
+
+```{r}
+full_sim_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/set2_data/full_sim_data_set2.RDS")
+```
+
+```{r}
+# Function to make the plots faster
+plot_simulation_grid <- function(data, 
+                                 fixed_param = "n2", 
+                                 target_eta = 0.80, 
+                                 palette = "Dark2") {
+    
+    # Select the correct x-axis variable based on fixed parameter design
+    x_var <- if (fixed_param == "n2") "n2.final" else "n1.final"
+    x_label <- if (fixed_param == "n2") "Number of Clusters (n2)" else "Cluster Size (n1)"
+    
+    plot_df <- subset(data, fixed == fixed_param & eta == target_eta)
+    
+    ggplot(plot_df, aes(
+        x = .data[[x_var]], 
+        y = eta.BF12, 
+        color = factor(wp_icc), 
+        linetype = factor(cac),
+        shape = factor(cac),
+        group = interaction(wp_icc, cac)
+    )) +
+        geom_hline(yintercept = target_eta, linetype = "dotted", color = "grey40", linewidth = 0.7) +
+        geom_line(linewidth = 0.8) +
+        geom_point(size = 2) +
+        facet_grid(
+            rows = vars(BF_thresh), 
+            cols = vars(eff_size), 
+            labeller = label_both,
+            scales = "free_x"
+        ) +
+        scale_color_brewer(palette = palette) +
+        scale_y_continuous(limits = c(0.7, 1), breaks = seq(0, 1, 0.2)) +
+        labs(
+            title = paste0("Probability of Exceeding BF Threshold (Fixed: ", fixed_param, ", Target η = ", target_eta, ")"),
+            x = x_label,
+            y = "P(BF > Threshold)",
+            color = "Within-Period ICC",
+            linetype = "CAC",
+            shape = "CAC"
+        ) +
+        theme_bw(base_size = 11) +
+        theme(
+            legend.position = "bottom",
+            legend.box = "horizontal",
+            strip.background = element_rect(fill = "grey92"),
+            panel.grid.minor = element_blank()
+        )
+}
+```
+
+```{r}
+plot_simulation_grid(full_sim_data_set2, fixed_param = "n2", target_eta = 0.70)
+plot_simulation_grid(full_sim_data_set2, fixed_param = "n1", target_eta = 0.70)
+plot_simulation_grid(full_sim_data_set2, fixed_param = "n2", target_eta = 0.80)
+plot_simulation_grid(full_sim_data_set2, fixed_param = "n1", target_eta = 0.80)
+plot_simulation_grid(full_sim_data_set2, fixed_param = "n1", target_eta = 0.90)
+plot_simulation_grid(full_sim_data_set2, fixed_param = "n2", target_eta = 0.90)
+plot_simulation_grid(full_sim_data_set2, fixed_param = "n2", target_eta = 0.95)
+plot_simulation_grid(full_sim_data_set2, fixed_param = "n1", target_eta = 0.95)
+
+```
