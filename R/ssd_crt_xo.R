@@ -10,7 +10,7 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment
     # Libraries
     library(lme4)
     library(bain)
-    library(BFpack)
+    # library(BFpack)
     
     # Warnings
     if (is.numeric(c(eff_size, n1, n2, ndatasets, BF_thresh, max_sample, batch_size)) == FALSE) 
@@ -21,10 +21,10 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment
     if (fixed %in% c("n1", "n2") == FALSE) stop("Fixed can only be a character indicating n1 or n2.")
     
     # Functions
-    source("data_generation_xo.R")
-    source("helper_functions.R")
-    source("get_bf.R")
-    source("print_results.R")
+    source("R/data_generation_xo.R")
+    source("R/helper_functions.R")
+    source("R/get_bf.R")
+    source("R/print_results.R")
     
     # Initial values
     n2_seq <- n2/2 #Number of clusters per sequence
@@ -47,6 +47,7 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment
     final_SSD <- vector(mode = "list")
     
     while (ultimate_sample_size == FALSE) {
+        condition_met <- FALSE
         # Generate data ------------------------------------------------------------
         if (missing(bp_icc)) {
             data_H1 <- do.call(data_generation, list(eff_size = eff_size, 

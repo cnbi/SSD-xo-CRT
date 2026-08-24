@@ -236,9 +236,10 @@ update_sample <- function(results, eta, current_eta, n2, n1, condition_met,
         
     } else if (hypotheses_set == 2) {
         if (condition_met == FALSE) {
-            print(c("Using cluster size:", n1, "and number of clusters:", n2,
-                    "prop_BF1c: ", current_eta,
-                    "low:", low, "high:", high))
+            print(c("Using cluster size:", n1, "/", "and number of clusters:", n2, "/",
+                    "prop_BF1c: ", current_eta,  "/",
+                    "low:", low, " / high:", high,  "/",
+                    " ultimate sample: ", ultimate_sample_size))
             if (fixed == "n1") {
                 if ((n2 == max_sample) | (n2 > max_sample))    { # If the sample size reaches the maximum
                     final_SSD <- list("n1" = n1,

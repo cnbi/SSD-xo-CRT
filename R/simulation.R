@@ -40,7 +40,7 @@ periods <- 2
 
 ## Find n1
 fixed <- "n2"
-n2 <- c(20, 40, 60)
+n2 <- c(10, 20, 40, 60)
 n1 <- 10
 sim_design_f1.1 <- expand.grid(
     "eff_size" = treat_eff,
