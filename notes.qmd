@@ -7,6 +7,8 @@ editor: visual
 
 ```{r}
 library(ggplot2)
+library(ggpubr)
+library(nanoparquet)
 ```
 
 ## Simulation
@@ -17,12 +19,12 @@ library(ggplot2)
 
 ```{r}
 # Data
-figure1_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure1_data/figure1_data_set2.RDS")
+figure1_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure1_data_2/figure1_data_set2.RDS")
 ```
 
 ```{r}
 # Number of clusters
-ggplot(figure1_data_set2[figure1_data_set2$fixed == "n2",],
+samples_n2 <- ggplot(figure1_data_set2[figure1_data_set2$fixed == "n2",],
        aes(
            y = eta.BF12,
            x = n2.final,
@@ -31,17 +33,18 @@ ggplot(figure1_data_set2[figure1_data_set2$fixed == "n2",],
        )) +
     geom_point() + geom_line() +
     scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
-    labs(title = "Bayes Factor H1 vs Hc",
+    labs(
          color = "Effect size",
          shape = "Effect size") +
     xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept=figure1_data_set2$eta)
+samples_n2
 ```
 
 Note: Number of clusters instead of cluster size because for these number of clusters 5 participants per cluster was enough.
 
 ```{r}
 # Cluster size
-ggplot(figure1_data_set2[figure1_data_set2$fixed == "n1",],
+samples_n1 <- ggplot(figure1_data_set2[figure1_data_set2$fixed == "n1",],
        aes(
            y = eta.BF12,
            x = n1.final,
@@ -50,24 +53,38 @@ ggplot(figure1_data_set2[figure1_data_set2$fixed == "n1",],
        )) +
     geom_point() + geom_line() +
     scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
-    labs(title = "Bayes Factor H1 vs Hc",
+    labs(
          color = "Effect size",
          shape = "Effect size") +
-    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept=figure1_data_set2$eta)
+    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept = figure1_data_set2$eta)
 
-
+samples_n1
 ```
 
 In comparison to the increase of number of clusters, in this case there is a small difference of Probabilty across the effect sizes when the cluster size is small. It is possible to see the curve.
 
+```{r}
+fig_1 <- ggarrange(samples_n2, samples_n1, common.legend = TRUE, legend = "bottom")
+
+
+ggsave(  plot = fig_1,
+  filename = "output/plots/Figure1.eps",
+  width = 180,
+  height = 130,
+  units = "mm",
+  device = "eps",
+  dpi = 300)
+```
+
 #### Power and correlations (ICC_bp and CAC)
 
 ```{r}
-figure2_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure2_data/figure2_data_set2.RDS")
+figure2_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure2_data_2/figure2_data2_set2.RDS")
 ```
 
 ```{r}
-ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
+# Number of clusters
+ICC_n1 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
        aes(
            y = eta.BF12,
            x = n2.final,
@@ -77,16 +94,18 @@ ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
     geom_point() + geom_line() +
     facet_grid(cols = vars(wp_icc)) +
     scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
-    labs(title = "Bayes Factor H1 vs Hc",
-         color = "CAC",
+    labs(color = "CAC",
          shape = "CAC") +
-    xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept=figure2_data_set2$eta)
+    xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept = figure2_data_set2$eta)
+
+ICC_n1
 ```
 
 When the within cluster between-period correlation coefficient is small, the difference between the cluster autocorrelation is so small that is not perceived in the Figure. In comparison, when the cluster between-period correlation coefficien, the difference in Bayesian power across the different values of cluster autocorrelation increases, specially for smaller number of clusters such as 10 and 20.
 
 ```{r}
-ggplot(figure2_data_set2[figure2_data_set2$fixed == "n1",],
+# Cluster size
+ICC_n1 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n1",],
        aes(
            y = eta.BF12,
            x = n1.final,
@@ -96,24 +115,35 @@ ggplot(figure2_data_set2[figure2_data_set2$fixed == "n1",],
     geom_point() + geom_line() +
     facet_grid(cols = vars(wp_icc)) +
     scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
-    labs(title = "Bayes Factor H1 vs Hc",
-         color = "CAC",
+    labs(color = "CAC",
          shape = "CAC") +
-    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept=figure2_data_set2$eta)
-
+    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept = figure2_data_set2$eta)
+ICC_n1
 ```
 
 In comparison to the previous Figure, in this Figure the differences in empirical $\eta$ across the levels of CAC are smaller. Only when the within-cluster between-period correlation is larger such as 0.1, then there are some differences in the empirical $\eta$ for smaller cluster sizes such as 5 and 10. After 10 the differences are not distinguishable.
 
+```{r}
+fig_2 <- ggarrange(ICC_n2, ICC_n1, ncol = 1, common.legend = TRUE, legend = "bottom")
+
+ggsave(  plot = fig_2,
+  filename = "output/plots/Figure2.eps",
+  width = 180,
+  height = 130,
+  units = "mm",
+  device = "eps",
+  dpi = 300)
+```
+
 #### Power, Bayes factor threshold and eta
 
 ```{r}
-figure3_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure3_data/figure3_data_set2.RDS")
+figure3_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure3_data_2/figure3_data_set2.RDS")
 ```
 
 ```{r}
 # Number of clusters
-ggplot(figure3_data_set2[figure3_data_set2$fixed == "n2",],
+bayesian_n2 <- ggplot(figure3_data_set2[figure3_data_set2$fixed == "n2",],
        aes(
            y = eta.BF12,
            x = n2.final,
@@ -127,13 +157,14 @@ ggplot(figure3_data_set2[figure3_data_set2$fixed == "n2",],
          color = "BF threshold",
          shape = "BF threshold") +
     xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom")
+bayesian_n2
 ```
 
 According to the plots there is a clear difference across the Bf thresholds, it is easier to meet the power criterion when the threshold is smaller, for instance 3.
 
 ```{r}
 # Cluster size
-ggplot(figure3_data_set2[figure3_data_set2$fixed == "n1",],
+bayesian_n1 <- ggplot(figure3_data_set2[figure3_data_set2$fixed == "n1",],
        aes(
            y = eta.BF12,
            x = n1.final,
@@ -146,17 +177,83 @@ ggplot(figure3_data_set2[figure3_data_set2$fixed == "n1",],
     labs(title = "Bayes Factor H1 vs Hc",
          color = "BF threshold",
          shape = "BF threshold") +
-    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom")
-
+    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom") + xlim(c(5,20))
+bayesian_n1
 
 ```
 
 In comparison to the other Figure, the empirical $\eta$ tends to be lower for all combinations. Moreover, there is a clearer distinction in the empirical $\eta$ across the different values of thresholds. As expected, with larger thresholds the empirical $\eta$ is lower.
 
+```{r}
+ggarrange(bayesian_n2, bayesian_n1, ncols = 1, common.legend = TRUE, legend = "bottom")
+
+
+```
+
+#### Median Bayes factor, Bayes factor threshold, eta
+
+```{r}
+ggplot(figure3_data[figure3_data$fixed == "n2",],
+       aes(
+           y = log(median.BF1c),
+           x = n2.final,
+           color = as.factor(BF_thresh),
+           shape = as.factor(BF_thresh)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(eta)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "BF threshold",
+         shape = "BF threshold") +
+    xlab("Number of clusters") + ylab("Bayes Factor") + theme(legend.position = "bottom")
+
+```
+
+```{r}
+ggplot(figure3_data[figure3_data$fixed == "n1",],
+       aes(
+           y = log(median.BF1c),
+           x = n1.final,
+           color = as.factor(BF_thresh),
+           shape = as.factor(BF_thresh)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(eta)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "BF threshold",
+         shape = "BF threshold") +
+    xlab("Cluster size") + ylab("Bayes Factor") + theme(legend.position = "bottom")
+```
+
+#### Sample sizes, Bayes factor thresholds and eta
+
+```{r}
+
+ggplot(figure3_data,
+       aes(
+           y = n1.final,
+           x = n2.final,
+           color = as.factor(BF_thresh),
+           shape = as.factor(BF_thresh)
+       )) +
+    geom_point() + geom_line() +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "Bayes factor threshold",
+         shape = "Bayes factor threshold") +
+    facet_grid(cols = vars(eta)) +
+    xlab("Number of clusters") + ylab("Cluster size") + theme(legend.position = "bottom") +
+    xlim(c(5,20))
+```
+
+Note: Some number of clusters were omitted because they required the same cluster size, the minimum cluster size of 5 participants per cluster. Only number of clusters is 5, 10, and 20. When the targeted eta is smaller such as 0.7 and 0.8, the required cluster size does not varies, it is constant across the different values of Bayes factor thresholds. For larger targeted probabilities such as 0.9 and 0.95, it can be seen a variation in the required sample size
+
 #### Full factorial simulation
 
 ```{r}
-full_sim_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/set2_data/full_sim_data_set2.RDS")
+full_sim_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/set2_data_/full_sim_data_set2.RDS")
 ```
 
 ```{r}
@@ -210,13 +307,13 @@ plot_simulation_grid <- function(data,
 ```
 
 ```{r}
-plot_simulation_grid(full_sim_data_set2, fixed_param = "n2", target_eta = 0.70)
-plot_simulation_grid(full_sim_data_set2, fixed_param = "n1", target_eta = 0.70)
-plot_simulation_grid(full_sim_data_set2, fixed_param = "n2", target_eta = 0.80)
-plot_simulation_grid(full_sim_data_set2, fixed_param = "n1", target_eta = 0.80)
-plot_simulation_grid(full_sim_data_set2, fixed_param = "n1", target_eta = 0.90)
-plot_simulation_grid(full_sim_data_set2, fixed_param = "n2", target_eta = 0.90)
-plot_simulation_grid(full_sim_data_set2, fixed_param = "n2", target_eta = 0.95)
-plot_simulation_grid(full_sim_data_set2, fixed_param = "n1", target_eta = 0.95)
+plot_simulation_grid(full_sim_data_set2[full_sim_data_set2$eff_size <0.5, ], fixed_param = "n2", target_eta = 0.70)
+plot_simulation_grid(full_sim_data_set2[full_sim_data_set2$eff_size <0.5, ], fixed_param = "n1", target_eta = 0.70)
+plot_simulation_grid(full_sim_data_set2[full_sim_data_set2$eff_size <0.5, ], fixed_param = "n2", target_eta = 0.80)
+plot_simulation_grid(full_sim_data_set2[full_sim_data_set2$eff_size <0.5, ], fixed_param = "n1", target_eta = 0.80)
+plot_simulation_grid(full_sim_data_set2[full_sim_data_set2$eff_size <0.5, ], fixed_param = "n1", target_eta = 0.90)
+plot_simulation_grid(full_sim_data_set2[full_sim_data_set2$eff_size <0.5, ], fixed_param = "n2", target_eta = 0.90)
+plot_simulation_grid(full_sim_data_set2[full_sim_data_set2$eff_size <0.5, ], fixed_param = "n2", target_eta = 0.95)
+plot_simulation_grid(full_sim_data_set2[full_sim_data_set2$eff_size <0.5, ], fixed_param = "n1", target_eta = 0.95)
 
 ```
