@@ -84,7 +84,7 @@ figure2_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure2_data_2/figure2_da
 
 ```{r}
 # Number of clusters
-ICC_n1 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
+ICC_n2 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
        aes(
            y = eta.BF12,
            x = n2.final,
@@ -138,7 +138,7 @@ ggsave(  plot = fig_2,
 #### Power, Bayes factor threshold and eta
 
 ```{r}
-figure3_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure3_data_2/figure3_data_set2.RDS")
+figure3_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure3_data_2/figure3_data2_set2.RDS")
 ```
 
 ```{r}
@@ -162,6 +162,8 @@ bayesian_n2
 
 According to the plots there is a clear difference across the Bf thresholds, it is easier to meet the power criterion when the threshold is smaller, for instance 3.
 
+In Figure ZZ is depicted the empirical $\eta$ for different values of sample size, in each panel a different value of the target probability $\eta$ is represented, and the colours represent different values of the Bayes factor threshold. In the figure can be seen that the empirical $\eta$ is lower for larger values of the Bayes factor threshold, and that the empirical $\eta$ increases with the sample size. As in the previous figures, the differences in the empirical $\eta$ between the values of the Bayes factor threshold are larger for smaller sample sizes such as 10 clusters or 5 participants per cluster.
+
 ```{r}
 # Cluster size
 bayesian_n1 <- ggplot(figure3_data_set2[figure3_data_set2$fixed == "n1",],
@@ -177,7 +179,7 @@ bayesian_n1 <- ggplot(figure3_data_set2[figure3_data_set2$fixed == "n1",],
     labs(title = "Bayes Factor H1 vs Hc",
          color = "BF threshold",
          shape = "BF threshold") +
-    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom") + xlim(c(5,20))
+    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom")
 bayesian_n1
 
 ```
@@ -231,7 +233,7 @@ ggplot(figure3_data[figure3_data$fixed == "n1",],
 
 ```{r}
 
-ggplot(figure3_data,
+samples_bayesian <- ggplot(figure3_data,
        aes(
            y = n1.final,
            x = n2.final,
@@ -240,20 +242,30 @@ ggplot(figure3_data,
        )) +
     geom_point() + geom_line() +
     scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
-    labs(title = "Bayes Factor H1 vs Hc",
-         color = "Bayes factor threshold",
+    labs(color = "Bayes factor threshold",
          shape = "Bayes factor threshold") +
     facet_grid(cols = vars(eta)) +
     xlab("Number of clusters") + ylab("Cluster size") + theme(legend.position = "bottom") +
-    xlim(c(5,20))
+    xlim(c(5,30))
+samples_bayesian
 ```
 
 Note: Some number of clusters were omitted because they required the same cluster size, the minimum cluster size of 5 participants per cluster. Only number of clusters is 5, 10, and 20. When the targeted eta is smaller such as 0.7 and 0.8, the required cluster size does not varies, it is constant across the different values of Bayes factor thresholds. For larger targeted probabilities such as 0.9 and 0.95, it can be seen a variation in the required sample size
 
+```{r}
+ggsave( plot = samples_bayesian,
+        filename = "output/plots/Figure3.eps",
+        width = 180,
+        height = 100,
+        units = "mm",
+        device = "eps",
+        dpi = 300)
+```
+
 #### Full factorial simulation
 
 ```{r}
-full_sim_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/set2_data_/full_sim_data_set2.RDS")
+full_sim_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/set2_data/full_sim_data_set2.RDS")
 ```
 
 ```{r}

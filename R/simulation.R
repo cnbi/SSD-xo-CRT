@@ -474,7 +474,7 @@ figure1_times <- collect_times(
     design_matrix = sim_design_f1,
     pair = 2,
     times_name = "time",
-    results_folder = "data/figure1_data",
+    results_folder = "data/figure1_data_2",
     file_name = "figure1_times"
 )
 
@@ -482,7 +482,7 @@ figure1_times <- collect_times(
 ## Results
 figure2_data <- collect_results(
     sim_design_f2,
-    results_folder = "data/figure2_data",
+    results_folder = "data/figure2_data_2",
     pair = 2,
     results_name = "Results",
     save = T,
@@ -501,11 +501,11 @@ figure2_times <- collect_times(
 ## Results
 figure3_data <- collect_results(
     sim_design_f3,
-    results_folder = "data/figure3_data",
+    results_folder = "data/figure3_data_2",
     pair = 2,
     results_name = "Results",
     save = T,
-    file_name = "figure3_data"
+    file_name = "figure3_data2"
 )
 ## Times
 figure3_times <- collect_times(
