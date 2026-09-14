@@ -1,13 +1,5 @@
 
 
-
-
-
-
-
-
-
-
 # Project set up
 dir.create("R") # Folder for results
 dir.create("data")
@@ -30,13 +22,13 @@ ndatasets <- 5000
 max_sample <- 400
 batch_size <- 1000
 
-#============= First figure: n1, n2, treatment effects =============
+#============= Figure 1: n1, n2, treatment effects =============
 treat_eff <- c(0.2, 0.4, 0.6, 0.8)
 wp_icc <- 0.05
-cac <- 0.8
-BF_thresh <- 5
+cac <- 0.5
+BF_thresh <- 10 
 eta <- 0.8
-periods <- 2
+periods <- c(2, 3, 4)
 
 ## Find n1
 fixed <- "n2"
@@ -77,7 +69,7 @@ nrow_design <- nrow(sim_design_f1)
 
 ## Figure 1 folder
 path <- "~/"
-results_folder <- "figure1_data"
+results_folder <- "data/figure1_data_3"
 if (!dir.exists(results_folder)) {
     dir.create(results_folder)
 }
@@ -107,11 +99,11 @@ stopCluster(clusters)
 # =================== Figure 2: n1, n2, wp_icc, cac =========================
 
 treat_eff <- 0.4
-BF_thresh <- 5
+BF_thresh <- 10
 eta <- 0.8
-periods <- 2
+periods <- 3
 wp_icc <- c(0.01, 0.05, 0.1)
-cac <- c(0.5, 0.8, 0.95)
+cac <- c(0.5, 0.7, 0.9)
 
 ## Find n1
 fixed <- "n2"
@@ -152,7 +144,7 @@ nrow_design <- nrow(sim_design_f2)
 
 # Figure 2 folder
 path <- "~/"
-results_folder <- "figure2_data"
+results_folder <- "data/figure2_data_3"
 if (!dir.exists(results_folder)) {
     dir.create(results_folder)
 }
@@ -183,8 +175,8 @@ stopCluster(clusters)
 
 treat_eff <- 0.4
 wp_icc <- 0.05
-cac <- 0.8
-periods <- 2
+cac <- 0.5
+periods <- 3
 BF_thresh <- c(3, 5, 10, 20)
 eta <- c(0.7, 0.8, 0.9, 0.95)
 
@@ -227,7 +219,7 @@ nrow_design <- nrow(sim_design_f3)
 
 # Figure 3 folder
 path <- "~/"
-results_folder <- "figure3_data"
+results_folder <- "data/figure3_data_3"
 if (!dir.exists(results_folder)) {
     dir.create(results_folder)
 }
@@ -273,7 +265,7 @@ batch_size <- 625
 
 treat_eff <- c(0.2, 0.4, 0.6, 0.8)
 wp_icc <- c(0.01, 0.05, 0.1)
-cac <- c(0.5, 0.8, 0.95)
+cac <- c(0.5, 0.7, 0.9)
 BF_thresh <- c(3, 5, 10, 20)
 eta <- c(0.7, 0.8, 0.9, 0.95)
 periods <- 2
@@ -849,3 +841,87 @@ plot_simulation_grid(full_sim_data_set2, fixed_param = "n1", target_eta = 0.90)
 plot_simulation_grid(full_sim_data_set2, fixed_param = "n2", target_eta = 0.90)
 plot_simulation_grid(full_sim_data_set2, fixed_param = "n2", target_eta = 0.95)
 plot_simulation_grid(full_sim_data_set2, fixed_param = "n1", target_eta = 0.95)
+
+
+
+#############################################################################
+####### EXTRA SIMULATION WITH MORE PERIODS AND LARGER THRESHOLDS ############
+
+
+treat_eff <- c(0.2, 0.4, 0.6, 0.8)
+wp_icc <- c(0.01, 0.05, 0.1)
+bp_icc <- c(0.005, 0.025, 0.04)
+BF_thresh <- c(3, 5, 10, 20, 50, 100)
+eta <- c(0.7, 0.8, 0.9, 0.95)
+periods <- c(2, 3, 4)
+
+
+## Find n1
+fixed <- "n2"
+n2 <- c(10, 20, 40, 60)
+n1 <- 10
+sim_design_set2.1 <- expand.grid(
+    "eff_size" = treat_eff,
+    "fixed" = fixed,
+    "n2" = n2,
+    "n1" = n1,
+    "wp_icc" = wp_icc,
+    "cac" = cac,
+    "BF_thresh" = BF_thresh,
+    "eta" = eta,
+    "periods" = periods
+)
+
+## Find n2
+fixed <- "n1"
+n1 <- c(5, 10, 20, 30)
+n2 <- 40
+sim_design_set2.2 <- expand.grid(
+    "eff_size" = treat_eff,
+    "fixed" = fixed,
+    "n2" = n2,
+    "n1" = n1,
+    "wp_icc" = wp_icc,
+    "cac" = cac,
+    "BF_thresh" = BF_thresh,
+    "eta" = eta,
+    "periods" = periods
+)
+
+# Design matrix
+sim_design_set2 <- rbind(sim_design_set2.1, sim_design_set2.2)
+sim_design_set2 <- mutate(sim_design_set2, seed = as.integer(sample(2^32 / 2, n())))
+nrow_design <- nrow(sim_design_set2)
+
+# Filter rows to include only new conditions
+big_simulation <- read_parquet("data/set2_data/design_matrix_set2")
+columns_to_compare <- names(big_simulation)[1:9]
+key1 <- do.call(paste, c(big_simulation[columns_to_compare], sep = "___"))
+key2 <- do.call(paste, c(sim_design_set2[columns_to_compare], sep = "___"))
+common_index <- length(which(key2 %in% key1))
+
+additional_combinations <- anti_join(sim_design_set2[, 1:9], big_simulation[, 1:9])
+
+## Hypothesis set 2 
+path <- "~/"
+results_folder <- "set2_data_extra"
+if (!dir.exists(results_folder)) {
+    dir.create(results_folder)
+}
+write_parquet(sim_design_set2,
+              paste0(results_folder, "/design_matrix_set2"))
+
+# Run simulation
+run_sim_wrapper <- function(Row) {
+    run_sim(
+        row = Row,
+        design_matrix = sim_design_set2,
+        ndatasets = ndatasets,
+        Max = max_sample,
+        batch_size = batch_size,
+        results_folder = results_folder
+    )
+}
+
+clusters <- makeForkCluster(detectCores() * 0.5)
+output <- parallel::parLapply(cl = clusters, X = missing_until_now, fun = run_sim_wrapper)

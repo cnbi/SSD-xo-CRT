@@ -13,6 +13,24 @@ library(nanoparquet)
 
 ## Simulation
 
+Additional levels in simulation: Larger Bayes factor thresholds and more time periods
+
+In the large simulation it would be 5376 new combinations
+
+Figure 1
+
+Figure 2
+
+Figure 3
+
+#TODO
+
+- I need to book the server for part of the simulation
+
+- I can run the simulation for my figures in my own computer
+
+- Figure 1:
+
 ### Results
 
 #### Power, sample sizes and effect sizes
