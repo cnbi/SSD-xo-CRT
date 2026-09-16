@@ -20,7 +20,7 @@ source("R/helper_simulation.R")
 
 ndatasets <- 5000
 max_sample <- 400
-batch_size <- 1000
+batch_size <- 250
 
 #============= Figure 1: n1, n2, treatment effects =============
 treat_eff <- c(0.2, 0.4, 0.6, 0.8)
@@ -89,7 +89,7 @@ run_sim_wrapper <- function(Row) {
     )
 }
 
-clusters <- makeForkCluster(nrow_design)
+clusters <- makeForkCluster(detectCores()*0.5)
 output <- parallel::parLapply(cl = clusters,
                               X = 1:nrow_design,
                               fun = run_sim_wrapper)
@@ -98,7 +98,7 @@ stopCluster(clusters)
 
 # =================== Figure 2: n1, n2, wp_icc, cac =========================
 
-treat_eff <- 0.4
+treat_eff <- 0.2
 BF_thresh <- 10
 eta <- 0.8
 periods <- 3
@@ -164,7 +164,7 @@ run_sim_wrapper <- function(Row) {
     )
 }
 
-clusters <- makeForkCluster(nrow_design)
+clusters <- makeForkCluster(detectCores()*0.5)
 output <- parallel::parLapply(cl = clusters,
                               X = 1:nrow_design,
                               fun = run_sim_wrapper)
@@ -173,7 +173,7 @@ stopCluster(clusters)
 
 # ================== Figure 3: n1, n2, Bayes factor, eta =========================
 
-treat_eff <- 0.4
+treat_eff <- 0.2
 wp_icc <- 0.05
 cac <- 0.5
 periods <- 3
@@ -239,7 +239,7 @@ run_sim_wrapper <- function(Row) {
     )
 }
 
-clusters <- makeForkCluster(nrow_design)
+clusters <- makeForkCluster(detectCores()*0.5)
 output <- parallel::parLapply(cl = clusters,
                               X = 1:nrow_design,
                               fun = run_sim_wrapper)
