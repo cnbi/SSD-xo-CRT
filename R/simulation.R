@@ -148,7 +148,7 @@ results_folder <- "data/figure2_data_3"
 if (!dir.exists(results_folder)) {
     dir.create(results_folder)
 }
-write_parquet(sim_design_f1, paste0(results_folder, "/design_matrix_f2"))
+write_parquet(sim_design_f2, paste0(results_folder, "/design_matrix_f2"))
 # Read design matrix
 sim_design_f2 <- read_parquet("data/figure2_data/design_matrix_f2")
 
@@ -223,9 +223,9 @@ results_folder <- "data/figure3_data_3"
 if (!dir.exists(results_folder)) {
     dir.create(results_folder)
 }
-write_parquet(sim_design_f1, paste0(results_folder, "/design_matrix_f3"))
+write_parquet(sim_design_f3, paste0(results_folder, "/design_matrix_f3"))
 # Read design matrix
-sim_design_f3 <- read_parquet("data/figure3_data/design_matrix_f3")
+sim_design_f3 <- read_parquet("data/figure3_data_3/design_matrix_f3")
 
 # Run simulation
 run_sim_wrapper <- function(Row) {
