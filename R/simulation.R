@@ -75,7 +75,7 @@ if (!dir.exists(results_folder)) {
 }
 write_parquet(sim_design_f1, paste0(results_folder, "/design_matrix_f1"))
 # Read design matrix
-sim_design_f1 <- read_parquet("data/figure1_data/design_matrix_f1")
+sim_design_f1 <- read_parquet("data/figure1_data_3/design_matrix_f1")
 
 # Run simulation
 run_sim_wrapper <- function(Row) {
@@ -150,7 +150,8 @@ if (!dir.exists(results_folder)) {
 }
 write_parquet(sim_design_f2, paste0(results_folder, "/design_matrix_f2"))
 # Read design matrix
-sim_design_f2 <- read_parquet("data/figure2_data/design_matrix_f2")
+sim_design_f2 <- read_parquet("data/figure2_data_3/design_matrix_f2")
+
 
 # Run simulation
 run_sim_wrapper <- function(Row) {
@@ -455,7 +456,7 @@ stopCluster(clusters)
 ## Results
 figure1_data <- collect_results(
     sim_design_f1,
-    results_folder = "data/figure1_data",
+    results_folder = "data/figure1_data_3",
     pair = 2,
     results_name = "Results",
     save = T,
@@ -466,7 +467,7 @@ figure1_times <- collect_times(
     design_matrix = sim_design_f1,
     pair = 2,
     times_name = "time",
-    results_folder = "data/figure1_data_2",
+    results_folder = "data/figure1_data_3",
     file_name = "figure1_times"
 )
 
@@ -474,7 +475,7 @@ figure1_times <- collect_times(
 ## Results
 figure2_data <- collect_results(
     sim_design_f2,
-    results_folder = "data/figure2_data_2",
+    results_folder = "data/figure2_data_3",
     pair = 2,
     results_name = "Results",
     save = T,
@@ -485,7 +486,7 @@ figure2_times <- collect_times(
     design_matrix = sim_design_f2,
     pair = 2,
     times_name = "time",
-    results_folder = "data/figure2_data",
+    results_folder = "data/figure2_data_3",
     file_name = "figure2_times"
 )
 
@@ -493,18 +494,18 @@ figure2_times <- collect_times(
 ## Results
 figure3_data <- collect_results(
     sim_design_f3,
-    results_folder = "data/figure3_data_2",
+    results_folder = "data/figure3_data_3",
     pair = 2,
     results_name = "Results",
     save = T,
-    file_name = "figure3_data2"
+    file_name = "figure3_data"
 )
 ## Times
 figure3_times <- collect_times(
     design_matrix = sim_design_f3,
     pair = 2,
     times_name = "time",
-    results_folder = "data/figure3_data",
+    results_folder = "data/figure3_data_3",
     file_name = "figure3_times"
 )
 

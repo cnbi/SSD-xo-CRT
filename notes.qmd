@@ -116,7 +116,7 @@ ICC_n2 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
          shape = "CAC") +
     xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept = figure2_data_set2$eta)
 
-ICC_n1
+ICC_n2
 ```
 
 When the within cluster between-period correlation coefficient is small, the difference between the cluster autocorrelation is so small that is not perceived in the Figure. In comparison, when the cluster between-period correlation coefficien, the difference in Bayesian power across the different values of cluster autocorrelation increases, specially for smaller number of clusters such as 10 and 20.
@@ -346,4 +346,416 @@ plot_simulation_grid(full_sim_data_set2[full_sim_data_set2$eff_size <0.5, ], fix
 plot_simulation_grid(full_sim_data_set2[full_sim_data_set2$eff_size <0.5, ], fixed_param = "n2", target_eta = 0.95)
 plot_simulation_grid(full_sim_data_set2[full_sim_data_set2$eff_size <0.5, ], fixed_param = "n1", target_eta = 0.95)
 
+```
+
+## Additional results
+
+#### Sample sizes, effect sizes and periods
+
+```{r}
+# Data 
+figure1_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure1_data_3/figure1_data_set2.RDS")
+```
+
+```{r}
+# Number of clusters
+samples_n2 <- ggplot(figure1_data_set2[figure1_data_set2$fixed == "n2",],
+                     aes(
+                         y = eta.BF12,
+                         x = n2.final,
+                         color = as.factor(eff_size),
+                         shape = as.factor(eff_size)
+                     )) +
+    geom_point() + geom_line() +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(
+        color = "Effect size",
+        shape = "Effect size") +
+    xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept = figure1_data_set2$eta) + facet_grid(cols = vars(periods))
+samples_n2
+
+```
+
+```{r}
+# Cluster size
+samples_n1 <- ggplot(figure1_data_set2[figure1_data_set2$fixed == "n1",],
+                     aes(
+                         y = eta.BF12,
+                         x = n1.final,
+                         color = as.factor(eff_size),
+                         shape = as.factor(eff_size)
+                     )) +
+    geom_point() + geom_line() +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(
+        color = "Effect size",
+        shape = "Effect size") +
+    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept = figure1_data_set2$eta) + facet_grid(cols = vars(periods))
+
+samples_n1
+```
+
+```{r}
+fig_1 <- ggarrange(samples_n2, samples_n1, common.legend = TRUE, legend = "bottom") 
+fig_1
+
+ggsave(  plot = fig_1,
+         filename = "output/plots/Figure1.eps",
+         width = 180,
+         height = 130,
+         units = "mm",
+         device = "eps",
+         dpi = 300)
+```
+
+```{r}
+fig1_n1 <- ggplot(figure1_data_set2[figure1_data_set2$fixed == "n2",],
+       aes(
+           y = n1.final,
+           x = n2.final,
+           color = as.factor(eff_size),
+           shape = as.factor(eff_size)
+       )) +
+    geom_point() + geom_line() +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(
+        color = "Effect size",
+        shape = "Effect size") +
+    xlab("Number of clusters") + ylab("Cluster-period size") + theme(legend.position = "bottom") + facet_grid(cols = vars(periods)) + ylim(0, 60)
+fig1_n1
+```
+
+```{r}
+# Cluster size
+fig1_n2 <- ggplot(figure1_data_set2[figure1_data_set2$fixed == "n1",],
+       aes(
+           y = n2.final,
+           x = n1.final,
+           color = as.factor(eff_size),
+           shape = as.factor(eff_size)
+       )) +
+    geom_point() + geom_line() +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(
+        color = "Effect size",
+        shape = "Effect size") +
+    xlab("Cluster-period size") + ylab("Number of clusters") + theme(legend.position = "bottom") + facet_grid(cols = vars(periods)) + ylim(0, 60)
+fig1_n2
+```
+
+```{r}
+
+fig_1 <- ggarrange(fig1_n1, fig1_n2, nrow = 2, common.legend = TRUE, legend = "bottom") 
+fig_1
+
+ggsave(  plot = fig_1,
+         filename = "output/plots/Figure1.eps",
+         width = 180,
+         height = 130,
+         units = "mm",
+         device = "eps",
+         dpi = 300)
+```
+
+#### Bayes factor, effect sizes and periods
+
+```{r}
+ggplot(figure1_data_set2[figure1_data_set2$fixed == "n1",],
+       aes(
+           y = log(median.BF1c),
+           x = n1.final,
+           color = as.factor(eff_size),
+           shape = as.factor(eff_size)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(periods)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "Effect size",
+         shape = "Effect size") +
+    xlab("Cluster-period size") + ylab("Bayes Factor") + theme(legend.position = "bottom")
+```
+
+```{r}
+# Number of clusters
+ggplot(figure1_data_set2[figure1_data_set2$fixed == "n2",],
+       aes(
+           y = log(median.BF1c),
+           x = n2.final,
+           color = as.factor(eff_size),
+           shape = as.factor(eff_size)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(periods)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "Effect size",
+         shape = "Effect size") +
+    xlab("Number of clusters") + ylab("Bayes Factor") + theme(legend.position = "bottom")
+```
+
+#### Sample sizes and correlations (ICC_bp and CAC)
+
+```{r}
+figure2_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure2_data_3/figure2_data_set2.RDS")
+```
+
+```{r}
+# Number of clusters
+ICC_n2 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
+                 aes(
+                     y = eta.BF12,
+                     x = n2.final,
+                     color = as.factor(cac),
+                     shape = as.factor(cac)
+                 )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(wp_icc)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(color = "CAC",
+         shape = "CAC") +
+    xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept = figure2_data_set2$eta)
+
+ICC_n2
+```
+
+```{r}
+# Cluster size
+ICC_n1 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n1",],
+                 aes(
+                     y = eta.BF12,
+                     x = n1.final,
+                     color = as.factor(cac),
+                     shape = as.factor(cac)
+                 )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(wp_icc)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(color = "CAC",
+         shape = "CAC") +
+    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom") + geom_hline(yintercept = figure2_data_set2$eta)
+ICC_n1
+```
+
+```{r}
+# Cluster size
+fig2_n1 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
+       aes(
+           y = n1.final,
+           x = n2.final,
+           color = as.factor(cac),
+           shape = as.factor(cac)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(wp_icc)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(color = "CAC",
+         shape = "CAC") +
+    xlab("Number of clusters") + ylab("Cluster-period size") + theme(legend.position = "bottom")
+fig2_n1
+```
+
+```{r}
+# Number of clusters
+fig2_n2 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n1",],
+       aes(
+           y = n2.final,
+           x = n1.final,
+           color = as.factor(cac),
+           shape = as.factor(cac)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(wp_icc)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(color = "CAC",
+         shape = "CAC") +
+    xlab("Cluster-period size") + ylab("Number of clusters") + theme(legend.position = "bottom") + ylim(0, 50)
+fig2_n2
+```
+
+```{r}
+fig_2 <- ggarrange(fig2_n1, fig2_n2, nrow = 2, common.legend = TRUE, legend = "bottom") 
+fig_2
+
+ggsave(  plot = fig_2,
+         filename = "output/plots/Figure2.eps",
+         width = 180,
+         height = 130,
+         units = "mm",
+         device = "eps",
+         dpi = 300)
+```
+
+#### Bayes factor and intraclass correlations
+
+```{r}
+# Cluster size
+ggplot(figure2_data_set2[figure2_data_set2$fixed == "n1",],
+       aes(
+           y = log(median.BF1c),
+           x = n1.final,
+           color = as.factor(cac),
+           shape = as.factor(cac)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(wp_icc)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "CAC",
+         shape = "CAC") +
+    xlab("Cluster size") + ylab("Bayes Factor") + theme(legend.position = "bottom")
+```
+
+```{r}
+# Number of clusters
+ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
+       aes(
+           y = log(median.BF1c),
+           x = n2.final,
+           color = as.factor(cac),
+           shape = as.factor(cac)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(wp_icc)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "CAC",
+         shape = "CAC") +
+    xlab("Number of clusters") + ylab("Bayes Factor") + theme(legend.position = "bottom")
+```
+
+#### Sample sizes, Bayes factor and power
+
+```{r}
+figure3_data_set2 <- readRDS("~/GitHub/SSD-xo-CRT/data/figure3_data_2/figure3_data2_set2.RDS")
+```
+
+```{r}
+# Number of clusters
+bayesian_n2 <- ggplot(figure3_data_set2[figure3_data_set2$fixed == "n2",],
+                      aes(
+                          y = eta.BF12,
+                          x = n2.final,
+                          color = as.factor(BF_thresh),
+                          shape = as.factor(BF_thresh)
+                      )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(eta)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "BF threshold",
+         shape = "BF threshold") +
+    xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom")
+bayesian_n2
+```
+
+```{r}
+# Cluster size
+bayesian_n1 <- ggplot(figure3_data_set2[figure3_data_set2$fixed == "n1",],
+                      aes(
+                          y = eta.BF12,
+                          x = n1.final,
+                          color = as.factor(BF_thresh),
+                          shape = as.factor(BF_thresh)
+                      )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(eta)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "BF threshold",
+         shape = "BF threshold") +
+    xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom")
+bayesian_n1
+```
+
+```{r}
+# Cluster size
+fig3_n1 <- ggplot(figure3_data_set2[figure3_data_set2$fixed == "n2",],
+                      aes(
+                          y = n1.final,
+                          x = n2.final,
+                          color = as.factor(BF_thresh),
+                          shape = as.factor(BF_thresh)
+                      )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(eta)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(
+         color = "BF threshold",
+         shape = "BF threshold") +
+    xlab("Number of clusters") + ylab("Cluster-period size") + theme(legend.position = "bottom") + ylim(0, 29)
+fig3_n1
+```
+
+```{r}
+# Number of clusters
+fig3_n2 <- ggplot(figure3_data_set2[figure3_data_set2$fixed == "n1",],
+       aes(
+           y = n2.final,
+           x = n1.final,
+           color = as.factor(BF_thresh),
+           shape = as.factor(BF_thresh)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(eta)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(
+         color = "BF threshold",
+         shape = "BF threshold") +
+    xlab("Cluster-period size") + ylab("Number of clusters") + theme(legend.position = "bottom") + ylim(0, 29)
+fig3_n2
+```
+
+```{r}
+fig_3 <- ggarrange(fig3_n1, fig3_n2, nrow = 2, common.legend = TRUE, legend = "bottom") 
+fig_3
+
+ggsave(  plot = fig_2,
+         filename = "output/plots/Figure2.eps",
+         width = 180,
+         height = 130,
+         units = "mm",
+         device = "eps",
+         dpi = 300)
+```
+
+For the example I could use a simulation without the binary search.
+
+#### Bayes factor, threshold and power
+
+```{r}
+# Number of clusters
+ggplot(figure3_data_set2[figure3_data_set2$fixed == "n2",],
+       aes(
+           y = log(median.BF1c),
+           x = n2.final,
+           color = as.factor(BF_thresh),
+           shape = as.factor(BF_thresh)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(eta)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "BF threshold",
+         shape = "BF threshold") +
+    xlab("Number of clusters") + ylab("Bayes Factor") + theme(legend.position = "bottom")
+
+```
+
+```{r}
+# Cluster size
+ggplot(figure3_data_set2[figure3_data_set2$fixed == "n1",],
+       aes(
+           y = log(median.BF1c),
+           x = n1.final,
+           color = as.factor(BF_thresh),
+           shape = as.factor(BF_thresh)
+       )) +
+    geom_point() + geom_line() +
+    facet_grid(cols = vars(eta)) +
+    scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
+    labs(title = "Bayes Factor H1 vs Hc",
+         color = "BF threshold",
+         shape = "BF threshold") +
+    xlab("Cluster size") + ylab("Bayes Factor") + theme(legend.position = "bottom")
 ```
