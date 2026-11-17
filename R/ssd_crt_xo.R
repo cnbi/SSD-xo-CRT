@@ -3,22 +3,48 @@
 
 
 
-ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment_n, 
-                       pattern, seed, BF_thresh, eta, batch_size, max_sample, 
-                       ndatasets, fixed, gc_every = 10) {
-    
+ssd_crt_xo <- function(eff_size,
+                       cac,
+                       wp_icc,
+                       bp_icc,
+                       periods,
+                       n2,
+                       n1,
+                       treatment_n,
+                       pattern,
+                       seed,
+                       BF_thresh,
+                       eta,
+                       batch_size,
+                       max_sample,
+                       ndatasets,
+                       fixed,
+                       gc_every = 10,
+                       pair_hyp = 1, b) {
     # Libraries
     library(lme4)
     library(bain)
     # library(BFpack)
     
     # Warnings
-    if (is.numeric(c(eff_size, n1, n2, ndatasets, BF_thresh, max_sample, batch_size)) == FALSE) 
+    if (is.numeric(c(
+        eff_size,
+        n1,
+        n2,
+        ndatasets,
+        BF_thresh,
+        max_sample,
+        batch_size
+    )) == FALSE)
         stop("All arguments, except 'fixed', must be numeric")
-    if (eff_size < 0) stop("The effect size must be a positive value ")
-    if (eta > 1) stop("The probability of exceeding Bayes Factor threshold cannot be larger than 1")
-    if (is.character(fixed) == FALSE) stop("Fixed can only be a character indicating n1 or n2.")
-    if (fixed %in% c("n1", "n2") == FALSE) stop("Fixed can only be a character indicating n1 or n2.")
+    if (eff_size < 0)
+        stop("The effect size must be a positive value ")
+    if (eta > 1)
+        stop("The probability of exceeding Bayes Factor threshold cannot be larger than 1")
+    if (is.character(fixed) == FALSE)
+        stop("Fixed can only be a character indicating n1 or n2.")
+    if (fixed %in% c("n1", "n2") == FALSE)
+        stop("Fixed can only be a character indicating n1 or n2.")
     
     # Functions
     source("R/data_generation_xo.R")
@@ -27,7 +53,7 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment
     source("R/print_results.R")
     
     # Initial values
-    n2_seq <- n2/2 #Number of clusters per sequence
+    n2_seq <- n2 / 2 #Number of clusters per sequence
     previous_high <- 0
     previous_eta <- 0
     current_eta <- 0
@@ -45,79 +71,168 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment
     
     results_H1 <- matrix(NA, nrow = ndatasets, ncol = 4)
     final_SSD <- vector(mode = "list")
+    if (pair_hyp == 1) {
+        results_H0 <- matrix(NA, nrow = ndatasets, ncol = 4)
+    }
     
     while (ultimate_sample_size == FALSE) {
         condition_met <- FALSE
         # Generate data ------------------------------------------------------------
         if (missing(bp_icc)) {
-            data_H1 <- do.call(data_generation, list(eff_size = eff_size, 
-                                                     cac = cac, wp_icc = wp_icc,
-                                                     periods = periods, n2 = n2, 
-                                                     n1 = n1,
-                                                     treatment_n = treatment_n,
-                                                     seed = seed,
-                                                     ndatasets = ndatasets,
-                                                     batch_size = batch_size,
-                                                     gc_every = gc_every))
+            data_H1 <- do.call(
+                data_generation,
+                list(
+                    eff_size = eff_size,
+                    cac = cac,
+                    wp_icc = wp_icc,
+                    periods = periods,
+                    n2 = n2,
+                    n1 = n1,
+                    treatment_n = treatment_n,
+                    seed = seed,
+                    ndatasets = ndatasets,
+                    batch_size = batch_size,
+                    gc_every = gc_every
+                )
+            )
         } else {
-            data_H1 <- do.call(data_generation, list(eff_size = eff_size,
-                                                     bp_icc = bp_icc,
-                                                     wp_icc = wp_icc,
-                                                     periods = periods, n2 = n2, 
-                                                     n1 = n1,
-                                                     treatment_n = treatment_n,
-                                                     seed = seed,
-                                                     ndatasets = ndatasets,
-                                                     batch_size = batch_size,
-                                                     gc_every = gc_every))
+            data_H1 <- do.call(
+                data_generation,
+                list(
+                    eff_size = eff_size,
+                    bp_icc = bp_icc,
+                    wp_icc = wp_icc,
+                    periods = periods,
+                    n2 = n2,
+                    n1 = n1,
+                    treatment_n = treatment_n,
+                    seed = seed,
+                    ndatasets = ndatasets,
+                    batch_size = batch_size,
+                    gc_every = gc_every
+                )
+            )
         }
         
         
-        # If H0 is true
-        # data_H0 <- do.call(data_generation, list(eff_size = 0, cac,wp_icc, periods, n2, 
-        #                                          n1, treatment_n, 
-        #                                          seed, ndatasets, 
-        #                                          batch_size = batch_size))
+        if (pair_hyp == 1) {
+            if (missing(bp_icc)) {
+                data_H0 <- do.call(
+                    data_generation,
+                    list(
+                        eff_size = 0,
+                        cac = cac,
+                        wp_icc = wp_icc,
+                        periods = periods,
+                        n2 = n2,
+                        n1 = n1,
+                        treatment_n = treatment_n,
+                        seed = seed,
+                        ndatasets = ndatasets,
+                        batch_size = batch_size,
+                        gc_every = gc_every
+                    )
+                )
+            } else {
+                data_H0 <- do.call(
+                    data_generation,
+                    list(
+                        eff_size = 0,
+                        bp_icc = bp_icc,
+                        wp_icc = wp_icc,
+                        periods = periods,
+                        n2 = n2,
+                        n1 = n1,
+                        treatment_n = treatment_n,
+                        seed = seed,
+                        ndatasets = ndatasets,
+                        batch_size = batch_size,
+                        gc_every = gc_every
+                    )
+                )
+            }
+        }
         
         # Compute Bayes factor --------------------------------------------------
         n_eff <- ((n1 * n2) / (1 + (n1 - 1) * data_H1$emp_wp_icc)) / 2 # Effecttive sample size
-        output_bf <- Map(get_BF, n_eff, data_H1$treatment_eff,  data_H1$var_treat, 2)
+        
+        if (pair_hyp == 1) {
+            n_eff_H0 <- ((n1 * n2) / (1 + (n1 - 1) * data_H0$emp_wp_icc)) / 2 # Effecttive sample size
+            output_bf_H0 <- Map(get_BF,
+                                n_eff,
+                                data_H0$treatment_eff,
+                                data_H0$var_treat,
+                                1, b)
+            
+            output_bf_H1 <- Map(get_BF,
+                                n_eff,
+                                data_H1$treatment_eff,
+                                data_H1$var_treat,
+                                1, b)
+        } else if (pair_hyp == 2) {
+            output_bf <- Map(get_BF,
+                             n_eff,
+                             data_H1$treatment_eff,
+                             data_H1$var_treat,
+                             2)
+        }
         
         # Evaluate power criterion ----------------------------------------------
-        results_H1[, 1] <- unlist(lapply(output_bf, `[`, "bf.12")) # Bayes factor H1vsHc
-        results_H1[, 2] <- unlist(lapply(output_bf, `[`, "pmp1")) #posterior model probabilities of H1
-        results_H1[, 3] <- unlist(lapply(output_bf, `[`, "bf.21")) # Bayes factor HcvsH1
-        results_H1[, 4] <- unlist(lapply(output_bf, `[`, "pmp2")) #posterior model probabilities of Hc
+        if (pair_hyp == 2) {
+            results_H1[, 1] <- unlist(lapply(output_bf, `[`, "bf.12")) # Bayes factor H1vsHc
+            results_H1[, 2] <- unlist(lapply(output_bf, `[`, "pmp1")) #posterior model probabilities of H1
+            results_H1[, 3] <- unlist(lapply(output_bf, `[`, "bf.21")) # Bayes factor HcvsH1
+            results_H1[, 4] <- unlist(lapply(output_bf, `[`, "pmp2")) #posterior model probabilities of Hc
+            
+            colnames(results_H1) <- c("BF.1c", "PMP.1", "BF.c1", "PMP.c")
+        } else if (pair_hyp == 1) {
+            results_H1[, 1] <- unlist(lapply(output_bf, `[`, "bf.10")) # Bayes factor H1vsH0
+            results_H1[, 2] <- unlist(lapply(output_bf, `[`, "pmp1")) #posterior model probabilities of H1
+            results_H1[, 3] <- unlist(lapply(output_bf, `[`, "bf.01")) # Bayes factor H0vsH1
+            results_H1[, 4] <- unlist(lapply(output_bf, `[`, "pmp0")) #posterior model probabilities of H0
+            
+            colnames(results_H1) <- c("BF.1c", "PMP.1", "BF.c1", "PMP.c")
+            
+            results_H0[, 1] <- unlist(lapply(output_bf, `[`, "bf.10")) # Bayes factor H1vsH0
+            results_H0[, 2] <- unlist(lapply(output_bf, `[`, "pmp1")) #posterior model probabilities of H1
+            results_H0[, 3] <- unlist(lapply(output_bf, `[`, "bf.01")) # Bayes factor H0vsH1
+            results_H0[, 4] <- unlist(lapply(output_bf, `[`, "pmp0")) #posterior model probabilities of H0
+            
+            colnames(results_H0) <- c("BF.10", "PMP.1", "BF.01", "PMP.0")
+        }
         
-        # results_H1[, 1] <- unlist(lapply(output_bf, extract_results, 1)) # Bayes factor H1vsHc
-        # results_H1[, 2] <- unlist(lapply(output_bf, extract_results, 4)) #posterior model probabilities of H1
-        # results_H1[, 3] <- unlist(lapply(output_bf, extract_results, 2)) # Bayes factor HcvsH1
-        # results_H1[, 4] <- unlist(lapply(output_bf, extract_results, 3)) #posterior model probabilities of Hc
-        
-        colnames(results_H1) <- c("BF.1c", "PMP.1", "BF.c1", "PMP.c")
-        
+        # TODO: Adapt for set 1
         # Proportion
         previous_eta <- current_eta
         current_eta <- length(which(results_H1[, "BF.1c"] > BF_thresh)) / ndatasets
         
         # Evaluation
-        ifelse(current_eta > eta, condition_met <- TRUE, condition_met <- FALSE)
+        ifelse(current_eta > eta,
+               condition_met <- TRUE,
+               condition_met <- FALSE)
         
         # Update sample size ---------------------------------------------------
-        binary_search <- update_sample(results = results_H1, eta = eta, 
-                                       current_eta = current_eta, 
-                                       n2 = n2, n1 = n1, 
-                                       condition_met = condition_met,
-                                       fixed = fixed, hypotheses_set = 2,
-                                       results_H1 = results_H1, data_H1 = data_H1,
-                                       final_SSD = final_SSD, 
-                                       min_sample = min_sample, 
-                                       max_sample = max_sample, 
-                                       singular_warn = singular_warn,
-                                       low = low, high = high, 
-                                       previous_high = previous_high, 
-                                       previous_eta = previous_eta, 
-                                       ultimate_sample_size = ultimate_sample_size)
+        binary_search <- update_sample(
+            results = results_H1,
+            eta = eta,
+            current_eta = current_eta,
+            n2 = n2,
+            n1 = n1,
+            condition_met = condition_met,
+            fixed = fixed,
+            hypotheses_set = 2,
+            results_H1 = results_H1,
+            data_H1 = data_H1,
+            final_SSD = final_SSD,
+            min_sample = min_sample,
+            max_sample = max_sample,
+            singular_warn = singular_warn,
+            low = low,
+            high = high,
+            previous_high = previous_high,
+            previous_eta = previous_eta,
+            ultimate_sample_size = ultimate_sample_size
+        )
         low <- binary_search$low
         high <- binary_search$high
         n1 <- binary_search$n1
@@ -130,14 +245,23 @@ ssd_crt_xo <- function(eff_size, cac, wp_icc, bp_icc, periods, n2, n1, treatment
     }
     
     rm(output_bf)
-    if (n2 < 30) warning("The number of groups is less than 30.
-                                             This may cause problems in convergence and singularity.")
+    if (n2 < 30)
+        warning(
+            "The number of groups is less than 30.
+                                             This may cause problems in convergence and singularity."
+        )
     
     # Display results
-    print_results(list_results = binary_search$final_SSD, hypotheses_set = 2, 
-                  BF_thresh = BF_thresh)
-    if (any(singular_warn > 0)) warning("At least one of the fitted models is singular. For more information about singularity see help('isSingular').
-                               The number of models that are singular can be found in the output object.")
+    print_results(
+        list_results = binary_search$final_SSD,
+        hypotheses_set = 2,
+        BF_thresh = BF_thresh
+    )
+    if (any(singular_warn > 0))
+        warning(
+            "At least one of the fitted models is singular. For more information about singularity see help('isSingular').
+                               The number of models that are singular can be found in the output object."
+        )
     invisible(binary_search$final_SSD)
 }
 
