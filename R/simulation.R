@@ -260,16 +260,16 @@ library(tools)   # To check simulation
 source("ssd_crt_xo.R")
 source("helper_simulation.R")
 
-ndatasets <- 5000
+ndatasets <- 3000
 max_sample <- 400
-batch_size <- 625
+batch_size <- 500
 
 treat_eff <- c(0.2, 0.4, 0.6, 0.8)
 wp_icc <- c(0.01, 0.05, 0.1)
 cac <- c(0.5, 0.7, 0.9)
 BF_thresh <- c(3, 5, 10, 20)
 eta <- c(0.7, 0.8, 0.9, 0.95)
-periods <- 2
+periods <- c(2, 3, 4)
 
 ## Find n1
 fixed <- "n2"
@@ -310,14 +310,15 @@ nrow_design <- nrow(sim_design_set2)
 
 ## Hypothesis set 2 folder
 path <- "~/"
-results_folder <- "set2_data"
+results_folder <- "set2_data2"
 if (!dir.exists(results_folder)) {
     dir.create(results_folder)
 }
 write_parquet(sim_design_set2,
               paste0(results_folder, "/design_matrix_set2"))
+
 # Read design matrix
-sim_design_set2 <- read_parquet("data/set2_data/design_matrix_set2")
+sim_design_set2 <- read_parquet("data/set2_data2/design_matrix_set2")
 
 # Run simulation
 run_sim_wrapper <- function(Row) {
@@ -331,7 +332,7 @@ run_sim_wrapper <- function(Row) {
     )
 }
 
-clusters <- makeForkCluster(detectCores() * 0.5)
+clusters <- makeForkCluster(detectCores() * 0.7)
 output <- parallel::parLapply(cl = clusters, X = missing_until_now, fun = run_sim_wrapper)
 
 a <- missing_rows(
@@ -349,6 +350,27 @@ b <- missing_rows(
 missing_until_now <- intersect(a, b)
 
 stopCluster(clusters)
+
+####################### COLLECT RESULTS LARGE SIMULATION ########################
+## Results
+sim_data <- collect_results(
+    sim_design_set2,
+    results_folder = "data/set2_data2",
+    pair = 2,
+    results_name = "Results",
+    save = T,
+    file_name = "sim_data_set2"
+)
+
+## Times
+sim_times <- collect_times(
+    design_matrix = sim_design_set2,
+    pair = 2,
+    times_name = "time",
+    results_folder = "data/set2_data2",
+    file_name = "sim_data_set2_times"
+)
+
 
 ####################### SIMULATION AFTER CHANGING CAC ###############################
 
