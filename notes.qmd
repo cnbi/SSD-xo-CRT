@@ -27,10 +27,6 @@ Figure 3
 
 - I need to book the server for part of the simulation
 
-- I can run the simulation for my figures in my own computer
-
-- Figure 1:
-
 ### Results
 
 #### Power, sample sizes and effect sizes
@@ -448,7 +444,7 @@ fig1_n2
 fig_1 <- ggarrange(fig1_n1, fig1_n2, nrow = 2, common.legend = TRUE, legend = "bottom") 
 fig_1
 
-ggsave(  plot = fig_1,
+ggsave(plot = fig_1,
          filename = "output/plots/Figure1.eps",
          width = 180,
          height = 130,
@@ -538,6 +534,8 @@ ICC_n1
 ```
 
 ```{r}
+# Labels for panels
+
 # Cluster size
 fig2_n1 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
        aes(
@@ -547,7 +545,7 @@ fig2_n1 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n2",],
            shape = as.factor(cac)
        )) +
     geom_point() + geom_line() +
-    facet_grid(cols = vars(wp_icc)) +
+    facet_grid(cols = vars(wp_icc), labeller = label_bquote(cols = rho[wp]: .(wp_icc))) +
     scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
     labs(color = "CAC",
          shape = "CAC") +
@@ -565,16 +563,16 @@ fig2_n2 <- ggplot(figure2_data_set2[figure2_data_set2$fixed == "n1",],
            shape = as.factor(cac)
        )) +
     geom_point() + geom_line() +
-    facet_grid(cols = vars(wp_icc)) +
+    facet_grid(cols = vars(wp_icc), labeller = label_bquote(cols = rho[wp]: .(wp_icc))) +
     scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
     labs(color = "CAC",
          shape = "CAC") +
-    xlab("Cluster-period size") + ylab("Number of clusters") + theme(legend.position = "bottom") + ylim(0, 50)
+    xlab("Cluster-period size") + ylab("Number of clusters") + theme(legend.position = "bottom") + ylim(0, 80)
 fig2_n2
 ```
 
 ```{r}
-fig_2 <- ggarrange(fig2_n1, fig2_n2, nrow = 2, common.legend = TRUE, legend = "bottom") 
+fig_2 <- ggarrange(fig2_n1, fig2_n2, nrow = 2, common.legend = TRUE, legend = "bottom")
 fig_2
 
 ggsave(  plot = fig_2,
@@ -642,7 +640,7 @@ bayesian_n2 <- ggplot(figure3_data_set2[figure3_data_set2$fixed == "n2",],
     geom_point() + geom_line() +
     facet_grid(cols = vars(eta)) +
     scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
-    labs(title = "Bayes Factor H1 vs Hc",
+    labs(title = "Probability H1 vs Hc",
          color = "BF threshold",
          shape = "BF threshold") +
     xlab("Number of clusters") + ylab("Probability") + theme(legend.position = "bottom")
@@ -661,7 +659,7 @@ bayesian_n1 <- ggplot(figure3_data_set2[figure3_data_set2$fixed == "n1",],
     geom_point() + geom_line() +
     facet_grid(cols = vars(eta)) +
     scale_color_brewer(palette = "Dark2") + scale_fill_brewer(palette = "Dark2") +
-    labs(title = "Bayes Factor H1 vs Hc",
+    labs(title = "Probability H1 vs Hc",
          color = "BF threshold",
          shape = "BF threshold") +
     xlab("Cluster size") + ylab("Probability") + theme(legend.position = "bottom")
@@ -683,7 +681,7 @@ fig3_n1 <- ggplot(figure3_data_set2[figure3_data_set2$fixed == "n2",],
     labs(
          color = "BF threshold",
          shape = "BF threshold") +
-    xlab("Number of clusters") + ylab("Cluster-period size") + theme(legend.position = "bottom") + ylim(0, 29)
+    xlab("Number of clusters") + ylab("Cluster-period size") + theme(legend.position = "bottom") + ylim(0, 15)
 fig3_n1
 ```
 
@@ -710,10 +708,10 @@ fig3_n2
 fig_3 <- ggarrange(fig3_n1, fig3_n2, nrow = 2, common.legend = TRUE, legend = "bottom") 
 fig_3
 
-ggsave(  plot = fig_2,
-         filename = "output/plots/Figure2.eps",
+ggsave(  plot = fig_3,
+         filename = "output/plots/Figure3.eps",
          width = 180,
-         height = 130,
+         height = 150,
          units = "mm",
          device = "eps",
          dpi = 300)
