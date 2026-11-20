@@ -19,7 +19,7 @@ source("R/ssd_crt_xo.R")
 source("R/helper_simulation.R")
 
 ndatasets <- 5000
-max_sample <- 400
+max_sample <- 300
 batch_size <- 250
 
 #============= Figure 1: n1, n2, treatment effects =============

@@ -75,6 +75,7 @@ ssd_crt_xo <- function(eff_size,
         results_H0 <- matrix(NA, nrow = ndatasets, ncol = 4)
     }
     
+    n2_seq <- n2/2
     while (ultimate_sample_size == FALSE) {
         condition_met <- FALSE
         # Generate data ------------------------------------------------------------
@@ -152,12 +153,13 @@ ssd_crt_xo <- function(eff_size,
                 )
             }
         }
-        
+        browser()
         # Compute Bayes factor --------------------------------------------------
-        n_eff <- ((n1 * n2) / (1 + (n1 - 1) * data_H1$emp_wp_icc)) / 2 # Effecttive sample size
+        # It should be the number of clusters per sequence
+        n_eff <- (n1 * n2_seq * periods) / (1 + (n1 - 1) * data_H1$emp_wp_icc - n1*data_H1$emp_bp_icc) # Effective sample size
         
         if (pair_hyp == 1) {
-            n_eff_H0 <- ((n1 * n2) / (1 + (n1 - 1) * data_H0$emp_wp_icc)) / 2 # Effecttive sample size
+            n_eff_H0 <- ((n1 * n2) / (1 + (n1 - 1) * data_H0$emp_wp_icc)) / 2 # Effective sample size
             output_bf_H0 <- Map(get_BF,
                                 n_eff,
                                 data_H0$treatment_eff,
