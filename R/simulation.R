@@ -69,13 +69,13 @@ nrow_design <- nrow(sim_design_f1)
 
 ## Figure 1 folder
 path <- "~/"
-results_folder <- "data/figure1_data_3"
+results_folder <- "data/figure1_data_4"
 if (!dir.exists(results_folder)) {
     dir.create(results_folder)
 }
 write_parquet(sim_design_f1, paste0(results_folder, "/design_matrix_f1"))
 # Read design matrix
-sim_design_f1 <- read_parquet("data/figure1_data_3/design_matrix_f1")
+sim_design_f1 <- read_parquet("data/figure1_data_4/design_matrix_f1")
 
 # Run simulation
 run_sim_wrapper <- function(Row) {
@@ -89,7 +89,7 @@ run_sim_wrapper <- function(Row) {
     )
 }
 
-clusters <- makeForkCluster(detectCores()*0.5)
+clusters <- makeForkCluster(detectCores()*0.6)
 output <- parallel::parLapply(cl = clusters,
                               X = 1:nrow_design,
                               fun = run_sim_wrapper)
@@ -144,13 +144,13 @@ nrow_design <- nrow(sim_design_f2)
 
 # Figure 2 folder
 path <- "~/"
-results_folder <- "data/figure2_data_3"
+results_folder <- "data/figure2_data_4"
 if (!dir.exists(results_folder)) {
     dir.create(results_folder)
 }
 write_parquet(sim_design_f2, paste0(results_folder, "/design_matrix_f2"))
 # Read design matrix
-sim_design_f2 <- read_parquet("data/figure2_data_3/design_matrix_f2")
+sim_design_f2 <- read_parquet("data/figure2_data_4/design_matrix_f2")
 
 
 # Run simulation
@@ -165,7 +165,7 @@ run_sim_wrapper <- function(Row) {
     )
 }
 
-clusters <- makeForkCluster(detectCores()*0.5)
+clusters <- makeForkCluster(detectCores()*0.6)
 output <- parallel::parLapply(cl = clusters,
                               X = 1:nrow_design,
                               fun = run_sim_wrapper)
@@ -220,13 +220,13 @@ nrow_design <- nrow(sim_design_f3)
 
 # Figure 3 folder
 path <- "~/"
-results_folder <- "data/figure3_data_3"
+results_folder <- "data/figure3_data_4"
 if (!dir.exists(results_folder)) {
     dir.create(results_folder)
 }
 write_parquet(sim_design_f3, paste0(results_folder, "/design_matrix_f3"))
 # Read design matrix
-sim_design_f3 <- read_parquet("data/figure3_data_3/design_matrix_f3")
+sim_design_f3 <- read_parquet("data/figure3_data_4/design_matrix_f3")
 
 # Run simulation
 run_sim_wrapper <- function(Row) {
@@ -478,7 +478,7 @@ stopCluster(clusters)
 ## Results
 figure1_data <- collect_results(
     sim_design_f1,
-    results_folder = "data/figure1_data_3",
+    results_folder = "data/figure1_data_4",
     pair = 2,
     results_name = "Results",
     save = T,
@@ -489,7 +489,7 @@ figure1_times <- collect_times(
     design_matrix = sim_design_f1,
     pair = 2,
     times_name = "time",
-    results_folder = "data/figure1_data_3",
+    results_folder = "data/figure1_data_4",
     file_name = "figure1_times"
 )
 
@@ -497,7 +497,7 @@ figure1_times <- collect_times(
 ## Results
 figure2_data <- collect_results(
     sim_design_f2,
-    results_folder = "data/figure2_data_3",
+    results_folder = "data/figure2_data_4",
     pair = 2,
     results_name = "Results",
     save = T,
@@ -508,7 +508,7 @@ figure2_times <- collect_times(
     design_matrix = sim_design_f2,
     pair = 2,
     times_name = "time",
-    results_folder = "data/figure2_data_3",
+    results_folder = "data/figure2_data_4",
     file_name = "figure2_times"
 )
 
@@ -516,7 +516,7 @@ figure2_times <- collect_times(
 ## Results
 figure3_data <- collect_results(
     sim_design_f3,
-    results_folder = "data/figure3_data_3",
+    results_folder = "data/figure3_data_4",
     pair = 2,
     results_name = "Results",
     save = T,
@@ -527,7 +527,7 @@ figure3_times <- collect_times(
     design_matrix = sim_design_f3,
     pair = 2,
     times_name = "time",
-    results_folder = "data/figure3_data_3",
+    results_folder = "data/figure3_data_4",
     file_name = "figure3_times"
 )
 

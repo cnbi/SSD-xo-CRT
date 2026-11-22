@@ -29,7 +29,8 @@ run_sim <- function(row, design_matrix,
                                   BF_thresh = design_matrix[row, "BF_thresh"],
                                   eta = design_matrix[row, "eta"],
                                   batch_size = batch_size, max_sample = Max, ndatasets = ndatasets,
-                                  fixed = as.character(design_matrix[row, "fixed"]))
+                                  fixed = as.character(design_matrix[row, "fixed"]),
+                                  pair_hyp = 2, b = 1)
     } else if (fixed == "N2") {
         ssd_results <- ssd_crt_xo(eff_size = design_matrix[row, "eff_size"],
                                   cac = design_matrix[row, "cac"],
@@ -42,7 +43,8 @@ run_sim <- function(row, design_matrix,
                                   BF_thresh = design_matrix[row, "BF_thresh"],
                                   eta = design_matrix[row, "eta"],
                                   batch_size = batch_size, max_sample = Max, ndatasets = ndatasets,
-                                  fixed = as.character(design_matrix[row, "fixed"]))
+                                  fixed = as.character(design_matrix[row, "fixed"]),
+                                  pair_hyp = 2, b = 1)
     }
     
     # End time and save results

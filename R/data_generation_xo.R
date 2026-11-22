@@ -165,6 +165,7 @@ data_generation <- function(eff_size,
     emp_total_var <- emp_var_c + emp_var_e + emp_var_g
     emp_wp_icc <- (emp_var_c + emp_var_g) / emp_total_var
     emp_cac <- emp_var_c / (emp_var_c + emp_var_g)
+    emp_bp_icc <- emp_cac * emp_wp_icc
     
     
     # Return
@@ -174,7 +175,8 @@ data_generation <- function(eff_size,
             "var_treat" = var_fix_eff,
             "emp_total_var" = emp_total_var,
             "emp_wp_icc" = emp_wp_icc,
-            "emp_cac" = emp_cac
+            "emp_cac" = emp_cac,
+            "emp_bp_icc" = emp_bp_icc
         )
     )
 }
