@@ -19,7 +19,7 @@ source("R/ssd_crt_xo.R")
 source("R/helper_simulation.R")
 
 ndatasets <- 5000
-max_sample <- 300
+max_sample <- 500
 batch_size <- 250
 
 #============= Figure 1: n1, n2, treatment effects =============
@@ -240,11 +240,11 @@ run_sim_wrapper <- function(Row) {
     )
 }
 
-clusters <- makeForkCluster(detectCores()*0.5)
+clusters <- makeForkCluster(detectCores()*0.6)
 output <- parallel::parLapply(cl = clusters,
-                              X = 1:nrow_design,
+                              X = 61,
                               fun = run_sim_wrapper)
-
+run_sim_wrapper(61)
 stopCluster(clusters)
 
 ############################ FULL SIMULATION ###################################
